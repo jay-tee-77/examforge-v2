@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ExamForge — AI Exam Prep</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f0ede6;--white:#fff;--ink:#1a1714;--ink2:#3d3a36;--muted:#8a8480;--border:#ddd9d0;--blue:#1a3cff;--blue-l:#eef0ff;--green:#16a34a;--red:#c9281e;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+header{background:var(--ink);padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.logo{font-family:'Playfair Display',serif;font-size:21px;font-weight:900;color:white;letter-spacing:-0.5px;}
+.logo span{color:#6b8cff;}
+.logo-sub{font-size:9px;font-weight:500;color:rgba(255,255,255,0.3);letter-spacing:2px;text-transform:uppercase;margin-left:8px;vertical-align:middle;}
+.hero{background:var(--ink);padding:38px 20px 48px;position:relative;overflow:hidden;}
+.hero::after{content:'EF';position:absolute;right:-20px;top:-10px;font-family:'Playfair Display',serif;font-size:150px;font-weight:900;color:rgba(255,255,255,0.025);line-height:1;pointer-events:none;}
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(107,140,255,0.15);border:1px solid rgba(107,140,255,0.3);color:#6b8cff;padding:4px 12px;border-radius:20px;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px;}
+.dot{width:6px;height:6px;border-radius:50%;background:#4ade80;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(28px,7vw,46px);font-weight:900;color:white;line-height:1.08;letter-spacing:-1px;margin-bottom:12px;}
+.hero h1 em{font-style:italic;color:#6b8cff;}
+.hero p{font-size:13px;line-height:1.65;color:rgba(255,255,255,0.55);font-weight:300;max-width:360px;}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);background:white;border-bottom:1px solid var(--border);}
+.step{padding:12px 8px;border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;gap:5px;}
+.step:last-child{border-right:none;}
+.sn{width:24px;height:24px;border-radius:50%;background:var(--blue-l);border:1.5px solid var(--blue);display:grid;place-items:center;font-size:10px;font-weight:700;color:var(--blue);transition:all 0.3s;}
+.step.done .sn{background:var(--green);border-color:var(--green);color:white;}
+.sl{font-size:9px;color:var(--muted);font-weight:500;text-align:center;line-height:1.3;}
+.step.done .sl{color:var(--ink2);}
+.main{padding:16px 16px 0;display:flex;flex-direction:column;gap:14px;}
+.card{background:white;border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.card-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-size:11px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:0.8px;}
+.pill{font-size:10px;font-weight:700;background:var(--blue-l);color:var(--blue);padding:2px 9px;border-radius:20px;border:1px solid rgba(26,60,255,0.15);}
+.card-body{padding:14px 16px;}
+.uzone{border:2px dashed var(--border);border-radius:10px;padding:26px 14px;text-align:center;cursor:pointer;background:#faf9f7;position:relative;margin-bottom:10px;transition:all 0.2s;}
+.uzone:active,.uzone.over{border-color:var(--blue);background:var(--blue-l);}
+.uzone input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;font-size:16px;}
+.uzone-icon{font-size:26px;margin-bottom:8px;}
+.uzone-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:3px;}
+.uzone-sub{font-size:11px;color:var(--muted);}
+.uzone-hint{font-size:11px;color:var(--blue);font-weight:600;margin-top:5px;}
+.prog{height:3px;background:var(--border);border-radius:2px;margin-top:8px;display:none;overflow:hidden;}
+.prog.show{display:block;}
+.prog-bar{height:100%;background:var(--blue);border-radius:2px;width:0;transition:width 0.3s;}
+.flist{display:flex;flex-direction:column;gap:6px;}
+.fi{display:flex;align-items:center;gap:9px;padding:8px 11px;background:#faf9f7;border:1px solid var(--border);border-radius:8px;}
+.ftag{width:26px;height:26px;border-radius:6px;background:var(--blue);display:grid;place-items:center;color:white;font-size:8px;font-weight:700;flex-shrink:0;}
+.fi-info{flex:1;min-width:0;}
+.fi-name{font-size:11px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink);}
+.fi-size{font-size:10px;color:var(--muted);}
+.frm{background:none;border:none;font-size:18px;color:var(--muted);cursor:pointer;padding:2px 6px;line-height:1;}
+.fg{margin-bottom:12px;}
+.fg label{display:block;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;}
+.fg input,.fg textarea{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--ink);background:#faf9f7;outline:none;-webkit-appearance:none;transition:border-color 0.2s;}
+.fg input:focus,.fg textarea:focus{border-color:var(--blue);background:white;}
+.fg textarea{min-height:72px;resize:vertical;line-height:1.5;font-size:14px;}
+.gen-wrap{padding:16px 16px;}
+.gen-btn{width:100%;padding:18px;background:var(--blue);color:white;border:none;border-radius:14px;font-family:'Playfair Display',serif;font-size:18px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 4px 20px rgba(26,60,255,0.3);transition:all 0.2s;letter-spacing:-0.3px;}
+.gen-btn:active{transform:scale(0.98);}
+.gen-btn:disabled{opacity:0.35;cursor:not-allowed;box-shadow:none;transform:none;}
+.gen-hint{font-size:11px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.5;}
+.out-wrap{padding:0 16px 16px;display:none;}
+.out-wrap.show{display:block;}
+.out-card{background:white;border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.out-head{background:var(--ink);padding:13px 16px;display:flex;align-items:center;justify-content:space-between;}
+.out-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:white;}
+.out-acts{display:flex;gap:7px;}
+.ob{padding:7px 13px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;border:1.5px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:white;}
+.ob.dl{background:white;color:var(--blue);border-color:white;}
+.out-body{padding:18px 16px;font-size:14px;line-height:1.75;color:var(--ink);max-height:72vh;overflow-y:auto;}
+.out-body h1{font-family:'Playfair Display',serif;font-size:18px;font-weight:800;margin:22px 0 8px;padding-bottom:7px;border-bottom:2px solid var(--border);}
+.out-body h1:first-child{margin-top:0;}
+.out-body h2{font-size:14px;font-weight:700;margin:16px 0 6px;color:var(--blue);}
+.out-body h3{font-size:13px;font-weight:700;margin:12px 0 5px;}
+.out-body p{margin-bottom:8px;}
+.out-body ul,.out-body ol{padding-left:18px;margin-bottom:8px;}
+.out-body li{margin-bottom:3px;}
+.out-body strong{font-weight:700;}
+.out-body hr{border:none;border-top:1.5px solid var(--border);margin:16px 0;}
+.out-body table{width:100%;border-collapse:collapse;margin:10px 0;font-size:12px;display:block;overflow-x:auto;}
+.out-body th{background:var(--ink);color:white;padding:7px 10px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;}
+.out-body td{padding:7px 10px;border-bottom:1px solid var(--border);}
+.out-body tr:nth-child(even) td{background:#faf9f7;}
+footer{background:var(--ink);color:white;padding:36px 20px 28px;text-align:center;margin-top:10px;}
+.ft-logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:900;margin-bottom:4px;}
+.ft-logo span{color:#6b8cff;}
+.ft-tag{font-size:11px;color:rgba(255,255,255,0.35);margin-bottom:24px;}
+.ft-div{width:36px;height:2px;background:#6b8cff;margin:0 auto 22px;border-radius:2px;}
+.credit{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:20px 16px;max-width:280px;margin:0 auto 18px;}
+.cr-by{font-size:9px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:8px;}
+.cr-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:800;margin-bottom:3px;}
+.cr-alias{font-size:11px;font-weight:700;color:#6b8cff;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;}
+.cr-role{display:inline-block;padding:3px 13px;background:rgba(107,140,255,0.2);border:1px solid rgba(107,140,255,0.4);border-radius:20px;font-size:10px;font-weight:600;color:#6b8cff;}
+.ft-copy{font-size:10px;color:rgba(255,255,255,0.2);}
+.lovr{display:none;position:fixed;inset:0;background:rgba(26,23,20,0.78);backdrop-filter:blur(6px);z-index:500;align-items:center;justify-content:center;padding:20px;}
+.lovr.show{display:flex;}
+.lcard{background:white;border-radius:18px;padding:34px 26px;text-align:center;max-width:300px;width:100%;}
+.spinner{width:46px;height:46px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.lcard h3{font-family:'Playfair Display',serif;font-size:16px;font-weight:800;margin-bottom:5px;}
+.lcard p{font-size:12px;color:var(--muted);margin-bottom:16px;}
+.lsteps{display:flex;flex-direction:column;gap:6px;}
+.ls{font-size:11px;color:var(--muted);padding:7px 11px;border-radius:7px;text-align:left;opacity:0.35;transition:all 0.3s;background:#faf9f7;}
+.ls.active{opacity:1;color:var(--blue);background:var(--blue-l);}
+.ls.done{opacity:1;color:var(--green);background:#f0fdf4;}
+.toast{position:fixed;bottom:16px;left:16px;right:16px;background:var(--ink);color:white;padding:13px 16px;border-radius:12px;font-size:13px;font-weight:500;text-align:center;z-index:600;transform:translateY(80px);opacity:0;transition:all 0.3s;box-shadow:0 8px 24px rgba(0,0,0,0.3);}
+.toast.show{transform:translateY(0);opacity:1;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Exam<span>Forge</span><span class="logo-sub">by Jay Tee</span></div>
+  <div style="font-size:10px;color:rgba(255,255,255,0.35);font-weight:500;">Free · No Login</div>
+</header>
+
+<div class="hero">
+  <div class="badge"><div class="dot"></div>AI Powered · 100% Free</div>
+  <h1>Upload. Generate.<br><em>Ace your exam.</em></h1>
+  <p>Upload your lecture slides and a past question paper. Get a complete personalised study guide — MCQ prep, model essays, cheat sheet — in under a minute.</p>
+</div>
+
+<div class="steps">
+  <div class="step" id="s1"><div class="sn">1</div><div class="sl">Upload<br>Slides</div></div>
+  <div class="step" id="s2"><div class="sn">2</div><div class="sl">Past<br>Question</div></div>
+  <div class="step" id="s3"><div class="sn">3</div><div class="sl">Course<br>Details</div></div>
+  <div class="step" id="s4"><div class="sn">4</div><div class="sl">Generate<br>Guide</div></div>
+</div>
+
+<div class="main">
+
+  <!-- Materials -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-title">📄 Lecture Slides & Notes</div>
+      <div class="pill" id="mat-count">0 files</div>
+    </div>
+    <div class="card-body">
+      <div class="uzone" id="mat-zone">
+        <input type="file" id="mat-input" accept="application/pdf,.pdf" multiple>
+        <div class="uzone-icon" id="mat-icon">📎</div>
+        <div class="uzone-title">Tap to select your PDFs</div>
+        <div class="uzone-sub">Slides, notes, textbook chapters</div>
+        <div class="uzone-hint">Tap here to browse files</div>
+      </div>
+      <div class="prog" id="mp"><div class="prog-bar" id="mf"></div></div>
+      <div class="flist" id="mat-list"></div>
+    </div>
+  </div>
+
+  <!-- Past question -->
+  <div class="card">
+    <div class="card-head"><div class="card-title">📋 Past Question Paper</div></div>
+    <div class="card-body">
+      <div class="uzone" id="pq-zone">
+        <input type="file" id="pq-input" accept="application/pdf,.pdf">
+        <div class="uzone-icon" id="pq-icon">📋</div>
+        <div class="uzone-title" id="pq-label">Tap to upload past question</div>
+        <div class="uzone-sub" id="pq-sub">Helps match your exact exam format</div>
+        <div class="uzone-hint" id="pq-hint">Tap here to browse files</div>
+      </div>
+      <div class="prog" id="pp"><div class="prog-bar" id="pf"></div></div>
+    </div>
+  </div>
+
+  <!-- Course details -->
+  <div class="card">
+    <div class="card-head"><div class="card-title">ℹ️ Course Details</div></div>
+    <div class="card-body">
+      <div class="fg"><label>Course Name</label><input type="text" id="cname" placeholder="e.g. POLI 343: Intro to Political Research" autocapitalize="words"></div>
+      <div class="fg"><label>Institution</label><input type="text" id="inst" placeholder="e.g. University of Ghana" autocapitalize="words"></div>
+      <div class="fg"><label>Special Focus (optional)</label><textarea id="snotes" placeholder="e.g. Focus on sampling methods. Essays likely on observation…"></textarea></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="gen-wrap">
+  <button class="gen-btn" id="gen-btn" disabled onclick="generate()">
+    ⚡ Generate My Study Guide
+  </button>
+  <p class="gen-hint">Upload slides + past question to unlock · Powered by Gemini AI · ~30–60 seconds · Completely free</p>
+</div>
+
+<div class="out-wrap" id="out-wrap">
+  <div class="out-card">
+    <div class="out-head">
+      <div class="out-title">📖 Your Study Guide</div>
+      <div class="out-acts">
+        <button class="ob" onclick="copyGuide()">Copy</button>
+        <button class="ob dl" onclick="dlGuide()">Download</button>
+      </div>
+    </div>
+    <div class="out-body" id="out-body"></div>
+  </div>
+</div>
+
+<footer>
+  <div class="ft-logo">Exam<span>Forge</span></div>
+  <div class="ft-tag">AI-Powered Exam Prep · Built for Students Who Want to Win</div>
+  <div class="ft-div"></div>
+  <div class="credit">
+    <div class="cr-by">💡 Concept & Vision by</div>
+    <div class="cr-name">Mahoney Jude Tetteh</div>
+    <div class="cr-alias">— JAY TEE —</div>
+    <div class="cr-role">Founder · ExamForge</div>
+  </div>
+  <div class="ft-copy">© 2025 ExamForge · Empowering students, one guide at a time.</div>
+</footer>
+
+<div class="lovr" id="lovr">
+  <div class="lcard">
+    <div class="spinner"></div>
+    <h3>Forging your guide…</h3>
+    <p>~30–60 seconds · sit tight ✊</p>
+    <div class="lsteps">
+      <div class="ls" id="ls1">📄 Reading your materials</div>
+      <div class="ls" id="ls2">🔍 Analysing exam format</div>
+      <div class="ls" id="ls3">🧠 Identifying key topics</div>
+      <div class="ls" id="ls4">✍️ Writing notes & essays</div>
+      <div class="ls" id="ls5">🎯 Building cheat sheet</div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let matFiles=[], matB64=[], pqFile=null, pqB64='', rawGuide='';
+
+function fmt(b){if(b<1024)return b+' B';if(b<1048576)return(b/1024).toFixed(1)+' KB';return(b/1048576).toFixed(1)+' MB';}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function readFile(file){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=e=>{
+      try{
+        const u8=new Uint8Array(e.target.result);
+        let bin='';const ch=8192;
+        for(let i=0;i<u8.length;i+=ch)bin+=String.fromCharCode.apply(null,u8.subarray(i,i+ch));
+        res(btoa(bin));
+      }catch(err){rej(err);}
+    };
+    r.onerror=()=>rej(new Error('Could not read file'));
+    r.readAsArrayBuffer(file);
+  });
+}
+
+function renderMats(){
+  document.getElementById('mat-count').textContent=matFiles.length+' file'+(matFiles.length!==1?'s':'');
+  const list=document.getElementById('mat-list');
+  list.innerHTML='';
+  matFiles.forEach((f,i)=>{
+    const el=document.createElement('div');el.className='fi';
+    el.innerHTML=`<div class="ftag">PDF</div><div class="fi-info"><div class="fi-name">${esc(f.name)}</div><div class="fi-size">${fmt(f.size)}</div></div><button class="frm" onclick="rm(${i})">×</button>`;
+    list.appendChild(el);
+  });
+  check();
+}
+
+function rm(i){matFiles.splice(i,1);matB64.splice(i,1);renderMats();}
+
+function check(){
+  const ok=matFiles.length>0&&pqFile;
+  document.getElementById('gen-btn').disabled=!ok;
+  const d=(id,on)=>document.getElementById(id).className='step'+(on?' done':'');
+  d('s1',matFiles.length>0); d('s2',!!pqFile);
+  d('s3',!!document.getElementById('cname').value.trim()); d('s4',ok);
+}
+
+document.getElementById('mat-input').addEventListener('change',async function(e){
+  const files=Array.from(e.target.files||[]);if(!files.length)return;
+  document.getElementById('mat-icon').textContent='⏳';
+  const pw=document.getElementById('mp'),pb=document.getElementById('mf');
+  pw.className='prog show';
+  for(let i=0;i<files.length;i++){
+    const f=files[i];if(matFiles.find(x=>x.name===f.name))continue;
+    pb.style.width=((i/files.length)*90)+'%';
+    try{const b64=await readFile(f);matFiles.push(f);matB64.push(b64);}
+    catch(err){toast('⚠️ Could not read: '+f.name);}
+  }
+  pb.style.width='100%';
+  setTimeout(()=>{pw.className='prog';pb.style.width='0';},600);
+  document.getElementById('mat-icon').textContent='✅';
+  this.value='';renderMats();
+});
+
+document.getElementById('pq-input').addEventListener('change',async function(e){
+  const f=e.target.files&&e.target.files[0];if(!f)return;
+  document.getElementById('pq-icon').textContent='⏳';
+  const pw=document.getElementById('pp'),pb=document.getElementById('pf');
+  pw.className='prog show';pb.style.width='50%';
+  try{
+    pqB64=await readFile(f);pqFile=f;
+    pb.style.width='100%';
+    setTimeout(()=>{pw.className='prog';pb.style.width='0';},600);
+    document.getElementById('pq-icon').textContent='✅';
+    document.getElementById('pq-label').textContent='✓ '+f.name;
+    document.getElementById('pq-label').style.color='#16a34a';
+    document.getElementById('pq-sub').textContent=fmt(f.size);
+    document.getElementById('pq-hint').style.display='none';
+    toast('✅ Past question uploaded!');check();
+  }catch(err){pw.className='prog';document.getElementById('pq-icon').textContent='📋';toast('⚠️ '+err.message);}
+  this.value='';
+});
+
+document.getElementById('cname').addEventListener('input',check);
+
+function animLoad(){
+  const ids=['ls1','ls2','ls3','ls4','ls5'];
+  ids.forEach(id=>document.getElementById(id).className='ls');
+  let i=0;
+  return setInterval(()=>{
+    if(i>0)document.getElementById(ids[i-1]).className='ls done';
+    if(i<ids.length){document.getElementById(ids[i]).className='ls active';i++;}
+  },9000);
+}
+
+function renderMD(md){
+  let h=md
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/^# (.+)$/gm,'<h1>$1</h1>')
+    .replace(/^## (.+)$/gm,'<h2>$1</h2>')
+    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/^---+$/gm,'<hr>')
+    .replace(/\*([^*\n]+)\*/g,'<em>$1</em>');
+  h=h.replace(/(\|.+\|\n)+/g,m=>{
+    const rows=m.trim().split('\n');let t='<table>';
+    rows.forEach((row,i)=>{
+      if(row.match(/^\|[-| ]+\|$/))return;
+      const cells=row.split('|').filter((_,j,a)=>j>0&&j<a.length-1);
+      t+=i===0?'<tr>'+cells.map(c=>`<th>${c.trim()}</th>`).join('')+'</tr>':'<tr>'+cells.map(c=>`<td>${c.trim()}</td>`).join('')+'</tr>';
+    });
+    return t+'</table>';
+  });
+  h=h.replace(/^(\d+)\. (.+)$/gm,'<li>$2</li>');
+  h=h.replace(/^[-*] (.+)$/gm,'<li>$1</li>');
+  h=h.replace(/(<li>.*<\/li>\n?)+/g,m=>'<ul>'+m+'</ul>');
+  h=h.replace(/^(?!<[hHtTuUoOlL]).+$/gm,m=>m.trim()?'<p>'+m+'</p>':'');
+  return h;
+}
+
+async function generate(){
+  if(matB64.length===0||!pqB64){toast('⚠️ Files still loading, please wait…');return;}
+  document.getElementById('lovr').className='lovr show';
+  document.getElementById('out-wrap').className='out-wrap';
+  const iv=animLoad();
+  try{
+    const parts=[];
+    matB64.slice(0,6).forEach((b64,i)=>{
+      parts.push({inlineData:{mimeType:'application/pdf',data:b64}});
+      parts.push({text:`[Document ${i+1}: ${matFiles[i].name}]`});
+    });
+    parts.push({inlineData:{mimeType:'application/pdf',data:pqB64}});
+    parts.push({text:'[PAST EXAM QUESTION PAPER]'});
+
+    const res=await fetch('/api/generate',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        parts,
+        course:document.getElementById('cname').value.trim(),
+        inst:document.getElementById('inst').value.trim(),
+        notes:document.getElementById('snotes').value.trim()
+      })
+    });
+
+    const data=await res.json();
+    if(!res.ok)throw new Error(data.error||'Server error');
+    rawGuide=data.guide;
+
+    clearInterval(iv);
+    document.getElementById('lovr').className='lovr';
+    document.getElementById('out-body').innerHTML=renderMD(rawGuide);
+    document.getElementById('out-wrap').className='out-wrap show';
+    document.getElementById('s4').className='step done';
+    document.getElementById('out-wrap').scrollIntoView({behavior:'smooth',block:'start'});
+    toast('✅ Study guide ready! Scroll down.');
+  }catch(err){
+    clearInterval(iv);
+    document.getElementById('lovr').className='lovr';
+    toast('❌ '+err.message);
+  }
+}
+
+function copyGuide(){
+  if(!rawGuide)return;
+  navigator.clipboard.writeText(rawGuide)
+    .then(()=>toast('✓ Copied!'))
+    .catch(()=>{
+      const ta=document.createElement('textarea');ta.value=rawGuide;
+      ta.style.cssText='position:fixed;opacity:0';document.body.appendChild(ta);
+      ta.select();ta.setSelectionRange(0,99999);document.execCommand('copy');
+      document.body.removeChild(ta);toast('✓ Copied!');
+    });
+}
+
+function dlGuide(){
+  if(!rawGuide)return;
+  const nm=(document.getElementById('cname').value||'StudyGuide').replace(/[^a-z0-9]/gi,'_');
+  const blob=new Blob([rawGuide],{type:'text/plain'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=nm+'_ExamForge.txt';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);toast('✓ Downloaded!');
+}
+
+let toastT;
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast show';
+  clearTimeout(toastT);toastT=setTimeout(()=>t.className='toast',4000);
+}
+</script>
+</body>
+</html>

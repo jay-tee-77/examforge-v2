@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "functions": {
+    "api/*.js": { "runtime": "@vercel/node" }
+  },
+  "routes": [
+    { "src": "/api/auth", "dest": "/api/auth.js" },
+    { "src": "/api/generate", "dest": "/api/generate.js" },
+    { "src": "/api/history", "dest": "/api/history.js" },
+    { "src": "/(.*)", "dest": "/public/$1" }
+  ]
+}
